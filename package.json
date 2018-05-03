@@ -1,7 +1,7 @@
 {
   "name": "hubot-dadbot",
   "description": "A hubot script to provide the dadliest responses.",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "author": "Collin Driscoll <cdriscoll@akitabox.com>",
   "license": "MIT",
   "keywords": ["hubot", "hubot-scripts", "dad-jokes"],

@@ -31,7 +31,7 @@ describe 'DadBot', ->
   it 'responds to "I AM HuNgRy"', ->
     @room.user.say('bob', 'I AM HuNgRy').then =>
       expect(@room.messages).to.eql [
-        ['bob', 'I AM HuNgRy'],
+        ['bob', 'I AM HuNgRy']
         ['hubot', '@bob Hi Hungry, I\'m hubot!']
       ]
 
@@ -39,4 +39,18 @@ describe 'DadBot', ->
     @room.user.say('bob', 'him hungry').then =>
       expect(@room.messages).to.eql [
         ['bob', 'him hungry']
+      ]
+
+  it 'responds to "i am very very hungry" with extra dadditude', ->
+    @room.user.say('bob', 'i am very very hungry').then =>
+      expect(@room.messages).to.eql [
+        ['bob', 'i am very very hungry']
+        ['hubot', '@bob Hi Mr(s) Hungry, can I call you Very?']
+      ]
+  
+  it 'responds to "i am very very"', ->
+    @room.user.say('bob', 'i am very very').then =>
+      expect(@room.messages).to.eql [
+        ['bob', 'i am very very']
+        ['hubot', '@bob Hi Very, I\'m hubot!']
       ]

@@ -71,51 +71,78 @@ module.exports = (robot) => {
 
     robot.hear(/\b(?:I'm|I\s+am|im)\s+(\w+)(?:\s+(\w+))?/i, (res) => {
         let capitalize = (str) => {
-            if (str == undefined) return undefined;
-            return str[0].toUpperCase() +
-                str.substr(1, str.length - 1).toLowerCase();
+            if (!str) return str;
+            let words = str.split(/\s+/);
+            let result = '';
+            for (word of words) {
+                result += word[0].toUpperCase() +
+                    word.substr(1, word.length - 1).toLowerCase() +
+                    ' ';
+            }
+            return result.trim();
         };
 
         let lowerCase = (str) => {
-            if (str == undefined) return undefined;
+            if (!str) return str;
             return str.toLowerCase();
         };
 
         let isIntensifier = (str) =>
-            intensifiers.indexOf(str.toLowerCase()) >= 0;
+            str ? intensifiers.indexOf(str.toLowerCase()) >= 0 : false;
 
-        let firstWord = lowerCase(res.match[1]);
-        let secondWord = lowerCase(res.match[2]);
+        let dadlyResponse = (terminator) => {
+            res.reply(`Hi ${capitalize(terminator)}, I'm ${robot.name}!`);
+        };
 
-        // caught something like "i am very very tired"
-        if (isIntensifier(firstWord) && firstWord == secondWord) {
+        let dadliestResponse = (intensifier, terminator) => {
+            res.reply(
+                `Hi Mr(s) ${capitalize(terminator)}, can I call you ` +
+                `${capitalize(intensifier)}?`
+            );
+        };
+
+        let intensifier = lowerCase(res.match[1]);
+        let terminator = lowerCase(res.match[2]);
+
+        // single-word situation, eg "I am tired"
+        if (!terminator) {
+            terminator = intensifier;
+            intensifier = undefined;
+        }
+
+        // caught something like "i am so very", start looking for a terminator
+        if (isIntensifier(intensifier) && isIntensifier(terminator)) {
+            // get the user's entire message, ignoring the part before our match
             let message = res.message.text.
                 substr(res.match.index).
                 toLowerCase();
-            message = message.substr(message.indexOf(firstWord));
-            let wordStack = message.split(/\s+/i).reverse();
-            // trim off our current firstWord and secondWord
+
+            // ignore the leading "i am/im/i'm"
+            message = message.substr(message.indexOf(intensifier));
+
+            let wordStack = message.split(/\s+/).reverse();
+
+            // trim off the stuff we've already looked at
             wordStack.pop();
             wordStack.pop();
+
             // consume to end of string looking for a terminator
-            while (firstWord == secondWord && wordStack.length > 0) {
-                secondWord = wordStack.pop();
+            while (isIntensifier(terminator) && wordStack.length > 0) {
+                intensifier += ' ' + terminator;
+                terminator = wordStack.pop();
             }
 
-            // no terminator found, use basic response
-            if (firstWord == secondWord) {
-                secondWord = undefined;
+            // no terminator found, use basic response with first word only
+            if (isIntensifier(terminator)) {
+                terminator = res.match[1];
+                intensifier = undefined;
             }
         }
 
-        firstWord = capitalize(firstWord);
-        secondWord = capitalize(secondWord);
-
-        if (secondWord == undefined || !isIntensifier(firstWord)
-        ) {
-            res.reply(`Hi ${firstWord}, I'm ${robot.name}!`);
+        if (intensifier == undefined) {
+            dadlyResponse(terminator);
         } else {
-            res.reply(`Hi Mr(s) ${secondWord}, can I call you ${firstWord}?`);
+            dadliestResponse(intensifier, terminator);
         }
     });
   };

@@ -76,12 +76,42 @@ module.exports = (robot) => {
                 str.substr(1, str.length - 1).toLowerCase();
         };
 
-        let firstWord = capitalize(res.match[1]);
-        let secondWord = capitalize(res.match[2]);
+        let lowerCase = (str) => {
+            if (str == undefined) return undefined;
+            return str.toLowerCase();
+        };
 
-        if (
-            secondWord == undefined
-            || intensifiers.indexOf(firstWord.toLowerCase()) < 0
+        let isIntensifier = (str) =>
+            intensifiers.indexOf(str.toLowerCase()) >= 0;
+
+        let firstWord = lowerCase(res.match[1]);
+        let secondWord = lowerCase(res.match[2]);
+
+        // caught something like "i am very very tired"
+        if (isIntensifier(firstWord) && firstWord == secondWord) {
+            let message = res.message.text.
+                substr(res.match.index).
+                toLowerCase();
+            message = message.substr(message.indexOf(firstWord));
+            let wordStack = message.split(/\s+/i).reverse();
+            // trim off our current firstWord and secondWord
+            wordStack.pop();
+            wordStack.pop();
+            // consume to end of string looking for a terminator
+            while (firstWord == secondWord && wordStack.length > 0) {
+                secondWord = wordStack.pop();
+            }
+
+            // no terminator found, use basic response
+            if (firstWord == secondWord) {
+                secondWord = undefined;
+            }
+        }
+
+        firstWord = capitalize(firstWord);
+        secondWord = capitalize(secondWord);
+
+        if (secondWord == undefined || !isIntensifier(firstWord)
         ) {
             res.reply(`Hi ${firstWord}, I'm ${robot.name}!`);
         } else {

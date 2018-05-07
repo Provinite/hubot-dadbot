@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/Provinite/hubot-dadbot.svg?branch=master)](https://travis-ci.com/Provinite/hubot-dadbot)
+
 # hubot-dadbot
 
 A hubot script to provide the dadliest responses.

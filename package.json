@@ -1,10 +1,14 @@
 {
   "name": "hubot-dadbot",
   "description": "A hubot script to provide the dadliest responses.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Collin Driscoll <cdriscoll@akitabox.com>",
   "license": "MIT",
-  "keywords": ["hubot", "hubot-scripts", "dad-jokes"],
+  "keywords": [
+    "hubot",
+    "hubot-scripts",
+    "dad-jokes"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/provinite/hubot-dadbot.git"
